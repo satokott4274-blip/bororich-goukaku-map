@@ -2,7 +2,7 @@
 <html lang="ja"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>関東 合格ラインマップ｜ボロリッチ</title>
-<meta name="description" content="関東の街の合格ラインと、荒井さんの実例22件を地図で見られる診断ツール">
+<meta name="description" content="関東の街の合格ラインと、実例22件を地図で見られる診断ツール">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -81,7 +81,7 @@ body.light #legend,body.light #banner,body.light #ctrl button,body.light #place{
 <div id="app">
 <aside id="panel">
   <header><div class="brand">BORORICH ｜ 築福不動産</div><h1>関東 合格ラインマップ</h1>
-  <p class="lead">関東の街の「合格ライン」と、荒井さんの実例22件を地図で</p></header>
+  <p class="lead">関東の街の「合格ライン」と、実例22件を地図で</p></header>
   <div class="tabs"><button data-tab="props" class="on">実例物件</button><button data-tab="area">エリア</button><button data-tab="diag">診断する</button></div>
   <div id="body"></div>
   <div class="cta"><a href="https://utage-system.com/line/open/PC8dzTB3dJcz?mtid=ZNH9mXMFhOUp" target="_blank" rel="noopener">この街・この物件で相談する ▶</a>
@@ -278,7 +278,7 @@ const yen=v=>v>=1000?(v/10000).toFixed(0)+'億':(Math.round(v*10)/10)+'万円';
 function judge(y,l){const d=Math.round((y-l)*10)/10;return y>=l?`<span class="badge b-ok">合格 +${d}%</span>`:`<span class="badge b-ng">ライン${d}%</span>`;}
 function thumb(p){return p.img?`<img class="thumb" src="img/${p.img}.jpg" alt="">`:`<div class="thumb">🏠</div>`;}
 function propCard(p){const ok=p.y>=p.line;return`<div class="card">${p.img?`<img src="img/${p.img}.jpg" alt="${p.city}の外観">`:''}
-  <h2>${p.city}${p.town?' '+p.town:''}</h2><div class="s">${p.pref}・${p.st}${p.built?'・'+p.built:''}・${p.kind==='実績'?'荒井さんの実績':p.kind}</div>
+  <h2>${p.city}${p.town?' '+p.town:''}</h2><div class="s">${p.pref}・${p.st}${p.built?'・'+p.built:''}・${p.kind}</div>
   <div class="grid"><div><span>物件価格</span><b>${yen(p.price)}</b></div><div><span>総投資額</span><b>${yen(p.total)}</b></div>
   <div><span>家賃（月）</span><b>${p.rent?p.rent+'万円':'—'}</b></div><div><span>表面利回り</span><b style="color:var(--amber)">${p.y}%</b></div></div>
   <div class="verdict ${ok?'v-ok':'v-ng'}">${p.city}の合格ラインは <b>${p.line}%</b>。${ok?`この物件は <b>${(p.y-p.line).toFixed(1)}%</b> 上回っています。`:`この物件は <b>${(p.line-p.y).toFixed(1)}%</b> 届いていません。`}<br>この利回りなら関東の <b>${passPct(p.y)}%</b> のエリアで合格ライン以上です。</div></div>`;}
@@ -290,7 +290,7 @@ function item(p){return`<div class="item ${p===sel?'on':''}" data-id="${p.id}">$
 function render(){const B=$('#body');let h='';
   if(tab==='props'){const kinds=['すべて','実績','過去事例','物件概要書'];
     if(sel)h+=propCard(sel);
-    h+=`<div class="sec">荒井さんの実例 ${PROPS.length}件</div><div class="chips">${kinds.map(k=>`<button data-k="${k}" class="${k===kindF?'on':''}">${k}</button>`).join('')}</div>`;
+    h+=`<div class="sec">実例 ${PROPS.length}件</div><div class="chips">${kinds.map(k=>`<button data-k="${k}" class="${k===kindF?'on':''}">${k}</button>`).join('')}</div>`;
     h+=PROPS.filter(p=>kindF==='すべて'||p.kind===kindF).map(item).join('');}
   if(tab==='area'){if(selCity)h+=cityCard(selCity);
     h+=`<input class="search" id="q" placeholder="市区町村名で探す（例：牛久）" value="${q}"><div class="chips">${['すべて',...PREFS].map(k=>`<button data-p="${k}" class="${k===prefF?'on':''}">${k}</button>`).join('')}</div>`;
