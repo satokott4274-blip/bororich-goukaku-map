@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>関東 合格ラインマップ｜ボロリッチ</title>
+<meta name="description" content="関東の街の合格ラインと、荒井さんの実例22件を地図で見られる診断ツール">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1F3350;--navy2:#14223a;--ink:#0a1120;--amber:#E7B065;--amber2:#f3cf8f;--red:#ff6b6b;--line:rgba(255,255,255,.09);--sub:rgba(255,255,255,.58);--ok:#4fd18b}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--ink);color:#fff;font-family:"Noto Sans JP","Hiragino Sans",sans-serif;-webkit-text-size-adjust:100%}
+#app{display:grid;grid-template-columns:380px 1fr;height:100dvh}
+#panel{background:linear-gradient(180deg,#14223a,#0e1829);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;z-index:2}
+#stage{position:relative;overflow:hidden;min-height:0;touch-action:none}
+#map,#gl{position:absolute;inset:0;width:100%;height:100%}#gl{pointer-events:none}
+header{padding:18px 18px 12px;border-bottom:1px solid var(--line)}
+.brand{font-size:11px;letter-spacing:.18em;color:var(--amber);font-weight:700}
+h1{font-size:21px;margin:4px 0 2px;font-weight:900;letter-spacing:.02em}
+.lead{font-size:12px;color:var(--sub);margin:0}
+.tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:9px 0;border-radius:999px;border:1px solid var(--line);background:transparent;color:#fff;font:700 13px inherit;font-family:inherit;cursor:pointer}
+.tabs button.on{background:var(--amber);color:#1a1a1a;border-color:var(--amber)}
+#body{overflow:auto;flex:1;min-height:0;padding:12px 14px 16px}
+.cta{padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.cta a{display:block;text-align:center;background:linear-gradient(90deg,#e7b065,#f0c27d);color:#1a1a1a;font-weight:900;text-decoration:none;padding:13px;border-radius:12px;font-size:15px}
+.cta small{display:block;color:var(--sub);font-size:10.5px;margin-top:7px;line-height:1.5}
+.item{display:flex;gap:10px;align-items:center;padding:9px;border-radius:12px;cursor:pointer;border:1px solid transparent}
+.item:hover{background:rgba(255,255,255,.04)}.item.on{background:rgba(231,176,101,.1);border-color:rgba(231,176,101,.45)}
+.thumb{width:56px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:#24324d;display:grid;place-items:center;font-size:20px}
+.it-main{flex:1;min-width:0}.it-t{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.it-s{font-size:11px;color:var(--sub)}
+.it-r{text-align:right}.it-y{font-weight:900;font-size:17px}.badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;display:inline-block;margin-top:2px}
+.b-ok{background:rgba(79,209,139,.15);color:var(--ok)}.b-ng{background:rgba(255,107,107,.15);color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.chips button{padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:#fff;font:600 12px inherit;font-family:inherit;cursor:pointer}.chips button.on{background:#fff;color:#111}
+.search{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;font:14px inherit;font-family:inherit}
+.sec{font-size:11px;color:var(--amber);font-weight:700;letter-spacing:.1em;margin:14px 2px 6px}
+.card{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.card img{width:100%;height:170px;object-fit:cover;border-radius:10px;display:block;margin-bottom:10px}
+.card h2{font-size:18px;margin:0 0 2px}.card .s{font-size:12px;color:var(--sub)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.grid div{background:rgba(0,0,0,.18);border-radius:10px;padding:8px 10px}
+.grid b{display:block;font-size:17px}.grid span{font-size:10.5px;color:var(--sub)}
+.big{font-size:30px;font-weight:900;color:var(--amber)}
+.verdict{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:13.5px;line-height:1.55}
+.v-ok{background:rgba(79,209,139,.12);color:#bff3d6}.v-ng{background:rgba(255,107,107,.12);color:#ffd0d0}
+label.f{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.go{width:100%;margin-top:12px;padding:12px;border-radius:12px;border:0;background:#fff;color:#111;font:900 15px inherit;font-family:inherit;cursor:pointer}
+.note{font-size:10.5px;color:var(--sub);line-height:1.6;margin-top:10px}
+/* 地図の上の部品 */
+.hud{position:absolute;pointer-events:none}.hud>*{pointer-events:auto}
+#legend{left:14px;bottom:14px;background:rgba(10,17,32,.78);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:11px;backdrop-filter:blur(6px)}
+#lgd{display:grid;grid-template-columns:1fr;gap:4px;margin-top:6px;font-size:12px;font-weight:700}#lgd span{display:flex;align-items:center;gap:6px;white-space:nowrap}#lgd i{width:16px;height:10px;border-radius:3px;box-shadow:0 0 6px currentColor}
+#legend .lab{display:flex;justify-content:space-between;color:var(--sub)}
+#ctrl{right:14px;top:14px;display:flex;flex-direction:column;gap:6px}
+#ctrl button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:rgba(10,17,32,.8);color:#fff;font-size:17px;cursor:pointer}
+#banner{left:50%;top:16px;transform:translateX(-50%);background:rgba(10,17,32,.82);border:1px solid rgba(231,176,101,.5);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;white-space:nowrap;display:none}
+#banner b{color:var(--amber);font-size:16px}
+#place{display:none;transform:translate(-50%,-100%);background:#E7B065;color:#1a1a1a;font-weight:900;font-size:17px;padding:6px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.35)}#place small{font-size:12px;font-weight:700;margin-right:6px;opacity:.8}
+#hint{left:50%;bottom:16px;transform:translateX(-50%);font-size:11.5px;color:var(--sub);background:rgba(10,17,32,.6);padding:6px 12px;border-radius:999px;white-space:nowrap}
+body.light{--line:rgba(0,0,0,.09);--sub:rgba(0,0,0,.55)}
+body.light #panel{background:linear-gradient(180deg,#fbf9f4,#f2eee6);color:#1a2233}
+body.light .tabs button,body.light .chips button{color:#1a2233}body.light .chips button.on{background:#1a2233;color:#fff}
+body.light .tabs button.on{color:#1a1a1a}body.light .search{background:#fff;color:#1a2233}
+body.light .card,body.light .grid div{background:#fff}body.light .item.on{background:rgba(231,176,101,.18)}
+body.light .v-ok{background:rgba(47,214,123,.14);color:#0f6b3a}body.light .v-ng{background:rgba(255,77,77,.12);color:#9b1c1c}
+body.light #legend,body.light #banner,body.light #ctrl button,body.light #place{display:none;transform:translate(-50%,-100%);background:#E7B065;color:#1a1a1a;font-weight:900;font-size:17px;padding:6px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.35)}#place small{font-size:12px;font-weight:700;margin-right:6px;opacity:.8}
+#hint{background:rgba(255,255,255,.88);color:#1a2233}
+#panel,#panel *,#legend,#banner,#ctrl button{transition:background .5s,color .5s,border-color .5s}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr;grid-template-rows:54dvh 1fr}
+  #stage{grid-row:1}#panel{grid-row:2;border-right:0;border-top:1px solid var(--line)}
+  header{display:none}#place{display:none;transform:translate(-50%,-100%);background:#E7B065;color:#1a1a1a;font-weight:900;font-size:17px;padding:6px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.35)}#place small{font-size:12px;font-weight:700;margin-right:6px;opacity:.8}
+#hint{display:none}
+  #banner{font-size:11px;top:8px;left:10px;transform:none;max-width:calc(100% - 70px);white-space:normal;border-radius:12px;padding:6px 10px}
+  #banner b{font-size:13px}
+  .cta small{display:none}.cta{padding:8px 12px calc(8px + env(safe-area-inset-bottom))}.cta a{padding:11px;font-size:14px}
+  #legend{padding:5px 8px;font-size:9.5px;left:8px;bottom:8px}#lgd{grid-template-columns:1fr 1fr;gap:2px 8px;font-size:10px;margin-top:3px}#lgd i{width:10px;height:8px}#ctrl{right:8px;top:8px}#ctrl button{width:36px;height:36px}
+  .card img{height:150px}
+}
+</style>
+<script src="map3d.js"></script><script src="prefs.js"></script><script src="props.js"></script>
+</head><body>
+<div id="app">
+<aside id="panel">
+  <header><div class="brand">BORORICH ｜ 築福不動産</div><h1>関東 合格ラインマップ</h1>
+  <p class="lead">関東の街の「合格ライン」と、荒井さんの実例22件を地図で</p></header>
+  <div class="tabs"><button data-tab="props" class="on">実例物件</button><button data-tab="area">エリア</button><button data-tab="diag">診断する</button></div>
+  <div id="body"></div>
+  <div class="cta"><a href="https://utage-system.com/line/open/PC8dzTB3dJcz?mtid=ZNH9mXMFhOUp" target="_blank" rel="noopener">この街・この物件で相談する ▶</a>
+  <small>合格ライン＝その街で買うなら最低これだけ欲しい表面利回り（築福不動産 エリア別利回り表）。表面利回り＝年間家賃÷総投資額。実例の数字は各物件資料の想定値です。</small></div>
+</aside>
+<main id="stage">
+  <canvas id="map"></canvas><canvas id="gl"></canvas>
+  <div class="hud" id="banner"></div><div class="hud" id="place"></div>
+  <div class="hud" id="ctrl"><button id="zin" aria-label="近づく">＋</button><button id="zout" aria-label="離れる">－</button><button id="rot" aria-label="回す">⟳</button><button id="home" aria-label="全体">⌂</button><button id="night" aria-label="昼と夜を切り替え">☾</button></div>
+  <div class="hud" id="legend"><div>合格ライン（表面利回り）</div><div id="lgd"></div></div>
+  <div class="hud" id="hint">街や家のピンをタップ ／ ドラッグで移動・ピンチで拡大</div>
+</main>
+</div>
+<script type="module">
+const CAP=new URLSearchParams(location.search).has('capture');let VT=0,REVEAL=4;
+import * as THREE from './vendor/three.module.min.js';
+// ── 準備 ─────────────────────────────
+const LINE={};for(const m of MAP)if(m.rate)LINE[m.pref+m.name]=m.rate;
+const RATES=ALL;                                   // 349市区町村の合格ライン
+const PREFS=['東京都','神奈川県','埼玉県','千葉県','茨城県','栃木県','群馬県'];
+const byCity=(pref,name)=>MAP.find(m=>m.pref===pref&&m.name===name);
+const CITY_LABELS=[['東京23区','東京都','千代田区'],['横浜','神奈川県','横浜市西区'],['川崎','神奈川県','川崎市中原区'],['さいたま','埼玉県','さいたま市浦和区'],['千葉','千葉県','千葉市中央区'],['宇都宮','栃木県','宇都宮市'],['前橋','群馬県','前橋市'],['高崎','群馬県','高崎市'],['水戸','茨城県','水戸市'],['つくば','茨城県','つくば市'],['八王子','東京都','八王子市'],['船橋','千葉県','船橋市'],['成田','千葉県','成田市'],['小田原','神奈川県','小田原市'],['川越','埼玉県','川越市']];
+const PREF_POS={};for(const pf of ['東京都','神奈川県','埼玉県','千葉県','茨城県','栃木県','群馬県']){const ms=MAP.filter(m=>m.pref===pf&&m.rate&&!(pf==='東京都'&&/区$/.test(m.name)));PREF_POS[pf]=[ms.reduce((s,m)=>s+m.c[0],0)/ms.length,ms.reduce((s,m)=>s+m.c[1],0)/ms.length];}
+PREF_POS['千葉県'][1]-=8;PREF_POS['神奈川県'][1]-=4;
+for(const p of PROPS){const m=byCity(p.pref,p.city);p.m=m;const dup=PROPS.filter(q=>q.city===p.city);const k=dup.indexOf(p);p.gx=m.c[0]+k*3.2;p.gy=m.c[1]-k*1.5;}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,u)=>a+(b-a)*u,sm=u=>{u=clamp(u,0,1);return u*u*(3-2*u);},eo=u=>1-Math.pow(1-clamp(u,0,1),3);
+const $=s=>document.querySelector(s);
+const BANDS=[[12,'#3f9bff','都心 〜12%'],[16,'#2fd67b','近郊 14〜16%'],[18,'#ffd23f','郊外 17〜18%'],[25,'#ff4d4d','地方 20%〜']];   // 信号の順：青→緑→黄→赤
+function band(r){return BANDS.find(b=>r<=b[0])||BANDS[BANDS.length-1];}
+function hexA(h,a){const n=parseInt(h.slice(1),16);return`rgba(${n>>16},${n>>8&255},${n&255},${a})`;}
+function lineColor(r,a){return hexA(band(r)[1],a);}
+function _oldLineColor(r,a){const u=clamp((r-3)/22,0,1),S=[[255,241,210],[231,176,101],[217,102,46],[168,50,42]];const k=Math.min(2,Math.floor(u*3)),f=u*3-k;const c=S[k].map((v,i)=>Math.round(v+(S[k+1][i]-v)*f));return`rgba(${c},${a})`;}
+
+// ── カメラ ─────────────────────────────
+const cv=$('#map'),X=cv.getContext('2d'),stage=$('#stage');let W=0,H=0,DPR=1,FL=1000,CX=0,CY=0;
+const cam={tx:8,ty:22,yaw:0,pit:58,dist:330},goal={...cam};let P,F,R,U;
+const HOME=()=>({tx:8,ty:24,yaw:0,pit:58,dist:W<H*0.9?360:330});
+function setCam(c){const y=c.yaw*Math.PI/180,p=c.pit*Math.PI/180;P=[c.tx+c.dist*Math.cos(p)*Math.sin(y),c.ty-c.dist*Math.cos(p)*Math.cos(y),c.dist*Math.sin(p)];
+  F=nrm([c.tx-P[0],c.ty-P[1],-P[2]]);R=nrm(crs(F,[0,0,1]));U=crs(R,F);}
+const nrm=v=>{const l=Math.hypot(...v);return v.map(x=>x/l);},crs=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+function pj(x,y,z=0){const dx=x-P[0],dy=y-P[1],dz=z-P[2],zc=dx*F[0]+dy*F[1]+dz*F[2];if(zc<1)return null;return[CX+FL*(dx*R[0]+dy*R[1]+dz*R[2])/zc,CY-FL*(dx*U[0]+dy*U[1]+dz*U[2])/zc,zc];}
+function unpj(sx,sy){const a=(sx-CX)/FL,b=-(sy-CY)/FL;const d=[F[0]+a*R[0]+b*U[0],F[1]+a*R[1]+b*U[1],F[2]+a*R[2]+b*U[2]];if(d[2]>=-1e-6)return null;const t=-P[2]/d[2];return[P[0]+d[0]*t,P[1]+d[1]*t];}
+function resize(){const r=stage.getBoundingClientRect();DPR=Math.min(2,devicePixelRatio||1);W=Math.round(r.width*DPR);H=Math.round(r.height*DPR);cv.width=W;cv.height=H;CX=W/2;CY=H*0.5;FL=Math.max(W,H)*0.95;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=2*Math.atan(CY/FL)*180/Math.PI;camera.updateProjectionMatrix();dirty=true;}
+
+// ── 家（three.js）────────────────────────
+const renderer=new THREE.WebGLRenderer({canvas:$('#gl'),antialias:true,alpha:true});renderer.setClearColor(0,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(40,1,0.5,4000);camera.up.set(0,0,1);
+scene.add(new THREE.HemisphereLight(0xfff4e0,0x1a2340,1.6));const sun=new THREE.DirectionalLight(0xffffff,2.0);sun.position.set(-50,-70,90);scene.add(sun);
+const rim=new THREE.DirectionalLight(0xE7B065,1.4);rim.position.set(60,50,30);scene.add(rim);
+// 写真の家：切り抜いた外観を台座に立て、いつもカメラの方を向かせる。後ろにアンバーの光
+const TEX={},GLOW={};
+function loadCut(id){if(TEX[id])return TEX[id];TEX[id]=new Promise(res=>{const im=new Image();im.onload=()=>{
+  const t=new THREE.Texture(im);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t.needsUpdate=true;
+  const c=document.createElement('canvas'),pad=40;c.width=im.width+pad*2;c.height=im.height+pad*2;const g=c.getContext('2d');g.filter='blur(16px)';g.drawImage(im,pad,pad);g.filter='none';g.globalCompositeOperation='source-in';g.fillStyle='#ffc26b';g.fillRect(0,0,c.width,c.height);
+  const gt=new THREE.CanvasTexture(c);res({t,gt,a:im.width/im.height,pad:pad/im.width,padY:pad/im.height});};im.src=`cut/${id}.webp`;});return TEX[id];}
+for(const p of PROPS)if(p.cut)loadCut(p.id);
+function pedestal(r){const g=new THREE.Group();
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.06,1.2,64),new THREE.MeshStandardMaterial({color:0x1b2a44,roughness:.55,metalness:.3}));top.rotation.x=Math.PI/2;top.position.z=-0.6;g.add(top);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(r*1.01,0.28,12,96),new THREE.MeshBasicMaterial({color:0xE7B065}));ring.position.z=0.02;g.add(ring);
+  const sh=document.createElement('canvas');sh.width=sh.height=128;const x=sh.getContext('2d'),rg=x.createRadialGradient(64,64,10,64,64,64);rg.addColorStop(0,'rgba(0,0,0,.55)');rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,128,128);
+  const shadow=new THREE.Mesh(new THREE.PlaneGeometry(r*3.2,r*3.2),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(sh),transparent:true,depthWrite:false}));shadow.position.z=-1.15;g.add(shadow);return g;}
+function makeHouse(p){const g=new THREE.Group();
+  if(p.cut){const HH=24;loadCut(p.id).then(({t,gt,a,pad,padY})=>{const W=HH*a,bb=new THREE.Group();bb.name='bb';
+      const glow=new THREE.Mesh(new THREE.PlaneGeometry(W*(1+pad*2),HH*(1+padY*2)),new THREE.MeshBasicMaterial({map:gt,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false}));glow.position.set(0,0.4,HH/2-0.5);glow.rotation.x=Math.PI/2;bb.add(glow);
+      const ph=new THREE.Mesh(new THREE.PlaneGeometry(W,HH),new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.04,side:THREE.DoubleSide}));ph.rotation.x=Math.PI/2;ph.position.z=HH/2-0.6;bb.add(ph);
+      g.add(bb);g.add(pedestal(Math.max(W,10)*0.42));});}
+  else{const w=9,d=7,h=p.fl>1?7.2:4.2,rz=3.4;
+    const wall=new THREE.MeshStandardMaterial({color:0xe9dfcc,roughness:.85}),roof=new THREE.MeshStandardMaterial({color:0x39404d,roughness:.5,metalness:.2}),win=new THREE.MeshStandardMaterial({color:0x1d2c40,emissive:0xffc26b,emissiveIntensity:.55,roughness:.3}),wood=new THREE.MeshStandardMaterial({color:0x6b4a33,roughness:.8});
+    const body=new THREE.Mesh(new THREE.BoxGeometry(w,d,h),wall);body.position.z=h/2;g.add(body);
+    const sh=new THREE.Shape();sh.moveTo(-w/2-0.8,0);sh.lineTo(w/2+0.8,0);sh.lineTo(0,rz);sh.closePath();
+    const r=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:d+1.6,bevelEnabled:false}),roof);r.rotation.x=Math.PI/2;r.position.set(0,d/2+0.8,h);g.add(r);
+    const addWin=(x,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.25,1.5),win);m.position.set(x,-d/2-0.06,z);g.add(m);};
+    addWin(-2.5,2.1);addWin(2.6,2.1);if(p.fl>1){addWin(-2.5,5.3);addWin(2.6,5.3);}
+    const door=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.25,2.6),wood);door.position.set(0.1,-d/2-0.06,1.3);g.add(door);
+    g.add(pedestal(8.5));}
+  return g;}
+let house=null;
+let dark=!CAP,NT=null;            // 録画は昼から始める。NT＝切り替え中の情報
+function nightR(t){if(!NT)return null;const r=Math.hypot(W,H)*1.05*sm((t-NT.t0)/1.6);
+  if(!NT.flipped&&r>NT.ox+50*DPR){NT.flipped=true;document.body.classList.toggle('light',!NT.to);}   // 夜が左のパネルに届いたらパネルも切り替え
+  if(t-NT.t0>=1.6){dark=NT.to;NT=null;return null;}return r;}
+function setNight(on,sx,sy){if(on===dark&&!NT)return;NT={to:on,t0:now(),ox:sx??W/2,oy:sy??H/2,flipped:false};}
+
+// ── 状態 ─────────────────────────────
+let sel=null,selCity=null,yieldNow=null,origin=null,tSel=-99,dirty=true,spin=false;
+
+function now(){return CAP?VT:performance.now()/1000;}
+function selectProp(p,fly=true){sel=p;selCity=p.m;yieldNow=p.y;origin=[p.gx,p.gy];tSel=now();
+  if(house)scene.remove(house);house=makeHouse(p);house.position.set(p.gx,p.gy,0);scene.add(house);
+  if(fly)Object.assign(goal,{tx:p.gx,ty:p.gy-4,dist:W<H*0.9?105:120,pit:40,yaw:goal.yaw+((Math.random()*30)-15)});
+  banner();render();dirty=true;}
+function selectCity(m,fly=true){sel=null;selCity=m;yieldNow=null;origin=null;if(house){scene.remove(house);house=null;}
+  if(fly)Object.assign(goal,{tx:m.c[0],ty:m.c[1]-6,dist:W<H*0.9?190:150,pit:48});banner();render();dirty=true;}
+function diagnose(y,m){sel=null;yieldNow=y;selCity=m||null;origin=m?[m.c[0],m.c[1]]:[8,22];tSel=now();if(house){scene.remove(house);house=null;}
+  Object.assign(goal,HOME());banner();dirty=true;}
+function passPct(y){return Math.round(passCount(y)/RATES.length*100);}   // 合格ライン以上のエリアの割合
+function passCount(y){return RATES.filter(r=>r<=y+1e-9).length;}
+function banner(){const b=$('#banner');if(yieldNow==null){b.style.display='none';return;}b.style.display='block';b.innerHTML=`利回り <b>${yieldNow}%</b> なら 関東の <b>${passPct(yieldNow)}%</b> のエリアで合格`;}
+
+// ── 描画 ─────────────────────────────
+function glowCity(L,m,p,k,pop){const c=band(m.rate)[1];
+  if(L){X.fillStyle=hexA(c,Math.min(.9,(.62+.25*pop)*k));X.fill(p);X.strokeStyle=`rgba(255,255,255,${.85*k})`;X.lineWidth=DPR*(1+pop);X.stroke(p);return;}
+  X.fillStyle=hexA(c,(.26+.25*pop)*k);X.fill(p);
+  X.save();X.globalCompositeOperation='lighter';X.strokeStyle=hexA(c,.16*k);X.lineWidth=DPR*(5+6*pop);X.stroke(p);X.restore();
+  X.strokeStyle=hexA(c,Math.min(1,.75*k+.25*pop));X.lineWidth=DPR*(1.1+1.4*pop);X.stroke(p);}
+const DUST=[...Array(70)].map((_,i)=>{let s=i*9301+49297;const r=()=>((s=(s*233280+1)%2147483647)/2147483647);return{a:r()*6.283,v:5+r()*12,s:.4+r()*.9};});
+function paint(L,e,R0){
+  const bg=X.createRadialGradient(CX,CY,50,CX,CY,Math.max(W,H));if(L){bg.addColorStop(0,'#f6f3ec');bg.addColorStop(1,'#e4dfd3');}else{bg.addColorStop(0,'#13213a');bg.addColorStop(1,'#060b16');}X.fillStyle=bg;X.fillRect(-20,-20,W+40,H+40);
+  // 街
+  for(const m of MAP){const p=new Path2D();for(const r of m.rings){let s=false;for(let i=0;i<r.length;i+=2){const q=pj(r[i],r[i+1]);if(!q){s=false;continue;}s?p.lineTo(q[0],q[1]):p.moveTo(q[0],q[1]);s=true;}}m._p=p;
+    if(!m.rate){X.fillStyle=L?'rgba(0,0,0,.04)':'rgba(255,255,255,.03)';X.fill(p);continue;}
+    if(yieldNow==null){const bi=BANDS.indexOf(band(m.rate)),k=clamp(REVEAL-bi,0,1);if(k<=0){X.strokeStyle=L?'rgba(0,0,0,.14)':'rgba(150,160,180,.12)';X.lineWidth=DPR*.7;X.stroke(p);continue;}glowCity(L,m,p,k,clamp(1-(REVEAL-bi)/1.2,0,1)*(REVEAL<4?1:0));}
+    else{const d=origin?Math.hypot(m.c[0]-origin[0],m.c[1]-origin[1]):0,hit=d<=R0,ok=m.rate<=yieldNow+1e-9;
+      if(!hit){glowCity(L,m,p,.35,0);continue;}
+      const pop=origin?clamp(1-(R0-d)/25,0,1):0;
+      if(ok)glowCity(L,m,p,1.25,pop);
+      else{X.fillStyle=L?'rgba(0,0,0,.05)':'rgba(90,100,120,.10)';X.fill(p);X.strokeStyle=L?'rgba(0,0,0,.14)':'rgba(150,160,180,.18)';X.lineWidth=DPR*.8;X.stroke(p);}}}
+  // 街の中心の点
+  for(const m of MAP){if(!m.rate)continue;const q=pj(m.c[0],m.c[1]);if(!q)continue;if(yieldNow==null&&BANDS.indexOf(band(m.rate))>=REVEAL)continue;const dim=yieldNow!=null&&m.rate>yieldNow+1e-9;const r=clamp(FL*.5/q[2],1,6)*(DPR>1?1:1);
+    X.beginPath();X.arc(q[0],q[1],r,0,7);X.fillStyle=L?(dim?'rgba(0,0,0,.12)':'rgba(25,32,48,.8)'):(dim?'rgba(200,205,215,.25)':'rgba(255,255,255,.92)');X.fill();}
+  // 選んだ街
+  if(selCity){X.save();X.strokeStyle=L?'#111':'#fff';X.lineWidth=2.5*DPR;X.shadowColor=L?'rgba(0,0,0,.3)':'#fff';X.shadowBlur=14*DPR;X.stroke(selCity._p);X.restore();}
+  // 衝撃の輪
+  if(origin&&yieldNow!=null&&e>0.6&&e<3.4){const r=R0,a=clamp((3.4-e)/0.8,0,1);X.save();X.beginPath();for(let i=0;i<=96;i++){const th=i/96*6.2832,q=pj(origin[0]+r*Math.cos(th),origin[1]+r*Math.sin(th));if(q)i?X.lineTo(q[0],q[1]):X.moveTo(q[0],q[1]);}
+    X.strokeStyle=`rgba(255,240,210,${.9*a})`;X.lineWidth=3*DPR;X.shadowColor='#E7B065';X.shadowBlur=24*DPR;X.stroke();X.restore();}
+  // 都県の境目（太い線）
+  for(const ps of PREF_SHAPES){for(const r of ps.rings){X.beginPath();let st=false;for(let i=0;i<r.length;i+=2){const q=pj(r[i],r[i+1]);if(!q){st=false;continue;}st?X.lineTo(q[0],q[1]):X.moveTo(q[0],q[1]);st=true;}X.closePath();
+    X.strokeStyle=L?'rgba(20,28,45,.75)':'rgba(255,255,255,.75)';X.lineWidth=2.4*DPR;X.stroke();}}
+  // 主な都市の札
+  X.textAlign='center';X.textBaseline='middle';
+  for(const [lab,pf,n] of CITY_LABELS){const m=byCity(pf,n);if(!m)continue;const q=pj(m.c[0],m.c[1]);if(!q||q[0]<0||q[0]>W||q[1]<0||q[1]>H)continue;
+    X.font=`800 ${12.5*DPR}px "Noto Sans JP",sans-serif`;const w=X.measureText(lab).width+14*DPR,h=20*DPR,y=q[1]-16*DPR;
+    X.fillStyle=L?'rgba(255,255,255,.95)':'rgba(8,13,24,.88)';X.beginPath();X.roundRect(q[0]-w/2,y-h/2,w,h,h/2);X.fill();
+    X.strokeStyle=L?'rgba(0,0,0,.25)':'rgba(255,255,255,.35)';X.lineWidth=1*DPR;X.stroke();
+    X.fillStyle=L?'#1b2333':'#fff';X.fillText(lab,q[0],y+0.5*DPR);
+    X.beginPath();X.arc(q[0],q[1],3*DPR,0,7);X.fillStyle=L?'#1b2333':'#fff';X.fill();}
+  // 都県名（大きく・いつも出す）
+  for(const pf of PREFS){const c=PREF_POS[pf],q=pj(c[0],c[1]);if(!q)continue;const sz=clamp(FL*9/q[2],14,22)*DPR/(DPR>1?1.15:1);
+    X.font=`900 ${sz}px "Noto Sans JP",sans-serif`;X.lineWidth=sz*.28;X.lineJoin='round';X.strokeStyle=L?'rgba(255,255,255,.95)':'rgba(6,11,22,.9)';X.strokeText(pf,q[0],q[1]);X.fillStyle=L?'#1b2333':'#ffffff';X.fillText(pf,q[0],q[1]);}
+  // 実例のピン
+  for(const p of PROPS){if(p===sel)continue;const q=pj(p.gx,p.gy);if(!q)continue;const ok=p.y>=p.line;p._s=q;
+    const s=clamp(FL*1.2/q[2],7,16)*DPR/ (DPR>1?1.4:1);
+    X.save();X.translate(q[0],q[1]);X.fillStyle=ok?'#E7B065':'#ff8a8a';X.strokeStyle=L?'#fff':'#0a1120';X.lineWidth=2*DPR;
+    X.beginPath();X.moveTo(0,0);X.lineTo(-s*.9,-s*1.3);X.lineTo(-s*.9,-s*2.4);X.lineTo(0,-s*3.2);X.lineTo(s*.9,-s*2.4);X.lineTo(s*.9,-s*1.3);X.closePath();X.fill();X.stroke();
+    X.fillStyle='#0a1120';X.fillRect(-s*.28,-s*2.05,s*.56,s*.62);X.restore();
+    if(cam.dist<230){X.font=`700 ${11*DPR}px "Noto Sans JP",sans-serif`;X.lineWidth=3*DPR;X.strokeStyle='rgba(6,11,22,.9)';X.strokeText(p.y+'%',q[0],q[1]-s*3.9);X.fillStyle='#fff';X.fillText(p.y+'%',q[0],q[1]-s*3.9);}}
+}
+function ringR(t){return 230*eo((t-0.62)/2.4);}
+function draw(){
+  const t=now(),dt=Math.min(0.25,t-(draw.last||t));draw.last=t;const kk=1-Math.exp(-dt*7);   // 画面の速さに関係なく同じ速さで寄る
+  for(const k in cam)cam[k]+=(goal[k]-cam[k])*kk;
+  if(spin)goal.yaw+=15*dt;
+  setCam(cam);
+  const e=t-tSel;let shake=0;if(sel&&e>0.55&&e<1.0)shake=(1-(e-0.55)/0.45)**2*6*DPR;
+  X.setTransform(1,0,0,1,shake?(Math.random()-.5)*shake:0,shake?(Math.random()-.5)*shake:0);
+  const R0=origin&&yieldNow!=null?ringR(e):Infinity;
+  // 昼（明るい）と夜（暗い）。切り替え中はタップした所から夜が円で広がる
+  const nr=nightR(t);
+  if(nr==null)paint(!dark,e,R0);
+  else{paint(NT.to,e,R0);X.save();X.beginPath();X.arc(NT.ox,NT.oy,nr,0,7);X.clip();paint(!NT.to,e,R0);X.restore();
+    X.save();X.beginPath();X.arc(NT.ox,NT.oy,nr,0,7);X.strokeStyle='rgba(255,226,170,.85)';X.lineWidth=3*DPR;X.shadowColor='#E7B065';X.shadowBlur=30*DPR;X.stroke();X.restore();}
+  // 選んだ家：落下と着地
+  if(house){const fz=e<0.55?60*(1-(e/0.55)**2):0;const k=e>0.55&&e<1.1?Math.exp(-(e-.55)*9)*Math.cos((e-.55)*28):0;house.position.z=Math.max(0,fz);house.scale.set(1+.1*k,1+.1*k,1-.2*k);const bb=house.getObjectByName('bb');if(bb)bb.rotation.z=Math.atan2(P[0]-house.position.x,-(P[1]-house.position.y));house.rotation.z=0;
+    if(e>0.55&&e<1.8){const q=pj(sel.gx,sel.gy),k2=eo((e-.55)/1.25);for(const d of DUST){const r=pj(sel.gx+Math.cos(d.a)*(8+d.v*k2),sel.gy+Math.sin(d.a)*(7+d.v*k2),k2*4*d.s);if(!r)continue;X.beginPath();X.arc(r[0],r[1],FL*.45*d.s/r[2]*(1+k2),0,7);X.fillStyle=`rgba(210,196,170,${.5*(1-k2)})`;X.fill();}}}
+  X.setTransform(1,0,0,1,0,0);
+  {const pl=$('#place');if(sel&&e>0.5){const q0=pj(sel.gx,sel.gy,0),qt=pj(sel.gx,sel.gy,sel.cut?22:14);const q=q0&&qt?[q0[0],qt[1]-10*DPR]:null;if(q){pl.style.display='block';pl.style.left=(q[0]/DPR)+'px';pl.style.top=(q[1]/DPR)+'px';pl.style.opacity=String(clamp((e-0.5)/0.25,0,1));pl.innerHTML=`<small>${sel.pref}</small>${sel.city}`;}else pl.style.display='none';}else pl.style.display='none';}
+  camera.position.set(...P);camera.up.set(...U);camera.lookAt(P[0]+F[0],P[1]+F[1],P[2]+F[2]);renderer.render(scene,camera);
+}
+function loop(){draw();requestAnimationFrame(loop);}
+
+// ── 操作 ─────────────────────────────
+const pts=new Map();let down=null,moved=0,pinch0=null;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);down=[e.clientX,e.clientY,e.button,e.shiftKey];moved=0;spin=false;if(pts.size===2){const[a,b]=[...pts.values()];pinch0=[Math.hypot(a[0]-b[0],a[1]-b[1]),goal.dist,Math.atan2(b[1]-a[1],b[0]-a[0]),goal.yaw];}});
+cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const o=pts.get(e.pointerId);const dx=e.clientX-o[0],dy=e.clientY-o[1];pts.set(e.pointerId,[e.clientX,e.clientY]);moved+=Math.abs(dx)+Math.abs(dy);
+  if(pts.size===2&&pinch0){const[a,b]=[...pts.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);goal.dist=clamp(pinch0[1]*pinch0[0]/d,40,600);goal.yaw=pinch0[3]-(Math.atan2(b[1]-a[1],b[0]-a[0])-pinch0[2])*57.3;return;}
+  if(down&&(down[2]===2||down[3])){goal.yaw-=dx*.3;goal.pit=clamp(goal.pit+dy*.25,20,89);return;}
+  const k=goal.dist/FL*DPR*1.2,y=goal.yaw*Math.PI/180;const ex=[Math.cos(y),Math.sin(y)],ny=[-Math.sin(y),Math.cos(y)];goal.tx-=(dx*ex[0]-dy*ny[0])*k;goal.ty-=(dx*ex[1]-dy*ny[1])*k;});
+const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch0=null;if(down&&moved<8&&pts.size===0)pick(e.clientX,e.clientY);if(pts.size===0)down=null;};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>{pts.delete(e.pointerId);down=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('wheel',e=>{e.preventDefault();goal.dist=clamp(goal.dist*Math.exp(e.deltaY*0.0015),40,600);},{passive:false});
+function pick(cx,cy){const r=cv.getBoundingClientRect(),sx=(cx-r.left)*DPR,sy=(cy-r.top)*DPR;
+  let best=null,bd=26*DPR;for(const p of PROPS){if(!p._s)continue;const d=Math.hypot(p._s[0]-sx,p._s[1]-(sy+12*DPR));if(d<bd){bd=d;best=p;}}
+  if(best){openTab('props');selectProp(best);scrollToSel();return;}
+  const g=unpj(sx,sy);if(!g)return;for(const m of MAP){if(!m.rate)continue;for(const ring of m.rings)if(inPoly(g[0],g[1],ring)){openTab('area');selectCity(m);return;}}}
+function inPoly(x,y,r){let c=false;for(let i=0,j=r.length-2;i<r.length;j=i,i+=2){const xi=r[i],yi=r[i+1],xj=r[j],yj=r[j+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c;}return c;}
+$('#zin').onclick=()=>goal.dist=clamp(goal.dist*.7,40,600);$('#zout').onclick=()=>goal.dist=clamp(goal.dist/.7,40,600);
+$('#night').onclick=()=>{setNight(!dark);};$('#rot').onclick=()=>{spin=!spin;};$('#home').onclick=()=>{Object.assign(goal,HOME());};
+
+// ── パネル ─────────────────────────────
+let tab='props',prefF='すべて',kindF='すべて',q='';
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
+function openTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));render();}
+const yen=v=>v>=1000?(v/10000).toFixed(0)+'億':(Math.round(v*10)/10)+'万円';
+function judge(y,l){const d=Math.round((y-l)*10)/10;return y>=l?`<span class="badge b-ok">合格 +${d}%</span>`:`<span class="badge b-ng">ライン${d}%</span>`;}
+function thumb(p){return p.img?`<img class="thumb" src="img/${p.img}.jpg" alt="">`:`<div class="thumb">🏠</div>`;}
+function propCard(p){const ok=p.y>=p.line;return`<div class="card">${p.img?`<img src="img/${p.img}.jpg" alt="${p.city}の外観">`:''}
+  <h2>${p.city}${p.town?' '+p.town:''}</h2><div class="s">${p.pref}・${p.st}${p.built?'・'+p.built:''}・${p.kind==='実績'?'荒井さんの実績':p.kind}</div>
+  <div class="grid"><div><span>物件価格</span><b>${yen(p.price)}</b></div><div><span>総投資額</span><b>${yen(p.total)}</b></div>
+  <div><span>家賃（月）</span><b>${p.rent?p.rent+'万円':'—'}</b></div><div><span>表面利回り</span><b style="color:var(--amber)">${p.y}%</b></div></div>
+  <div class="verdict ${ok?'v-ok':'v-ng'}">${p.city}の合格ラインは <b>${p.line}%</b>。${ok?`この物件は <b>${(p.y-p.line).toFixed(1)}%</b> 上回っています。`:`この物件は <b>${(p.line-p.y).toFixed(1)}%</b> 届いていません。`}<br>この利回りなら関東の <b>${passPct(p.y)}%</b> のエリアで合格ライン以上です。</div></div>`;}
+function cityCard(m){const ps=PROPS.filter(p=>p.m===m),need=(t)=>Math.ceil(m.rate*t/12)/100;return`<div class="card"><div class="s">${m.pref}</div><h2>${m.name}</h2>
+  <div style="margin-top:6px">合格ライン <span class="big">${m.rate}%</span></div>
+  <div class="note" style="font-size:12px;color:#fff">表面利回りが ${m.rate}% 以上なら合格。たとえば総投資300万円なら、家賃 <b style="color:var(--amber)">月${(m.rate*300/1200).toFixed(1)}万円</b> 以上が目安です。</div>
+  ${ps.length?`<div class="sec">この街の実例</div>`+ps.map(item).join(''):''}</div>`;}
+function item(p){return`<div class="item ${p===sel?'on':''}" data-id="${p.id}">${thumb(p)}<div class="it-main"><div class="it-t">${p.city}${p.town?' '+p.town:''}</div><div class="it-s">${yen(p.price)}・${p.st}</div></div><div class="it-r"><div class="it-y">${p.y}%</div>${judge(p.y,p.line)}</div></div>`;}
+function render(){const B=$('#body');let h='';
+  if(tab==='props'){const kinds=['すべて','実績','過去事例','物件概要書'];
+    if(sel)h+=propCard(sel);
+    h+=`<div class="sec">荒井さんの実例 ${PROPS.length}件</div><div class="chips">${kinds.map(k=>`<button data-k="${k}" class="${k===kindF?'on':''}">${k}</button>`).join('')}</div>`;
+    h+=PROPS.filter(p=>kindF==='すべて'||p.kind===kindF).map(item).join('');}
+  if(tab==='area'){if(selCity)h+=cityCard(selCity);
+    h+=`<input class="search" id="q" placeholder="市区町村名で探す（例：牛久）" value="${q}"><div class="chips">${['すべて',...PREFS].map(k=>`<button data-p="${k}" class="${k===prefF?'on':''}">${k}</button>`).join('')}</div>`;
+    const list=MAP.filter(m=>m.rate&&(prefF==='すべて'||m.pref===prefF)&&(!q||m.name.includes(q))).sort((a,b)=>a.rate-b.rate);
+    h+=list.slice(0,120).map(m=>`<div class="item ${m===selCity?'on':''}" data-c="${m.pref}|${m.name}"><div class="thumb" style="background:${lineColor(m.rate,.9)};color:#111;font-weight:900;font-size:13px">${m.rate}%</div><div class="it-main"><div class="it-t">${m.name}</div><div class="it-s">${m.pref}${PROPS.some(p=>p.m===m)?'・実例あり':''}</div></div></div>`).join('');
+    if(list.length>120)h+=`<div class="note">ほか ${list.length-120} 件（名前で絞り込めます）</div>`;}
+  if(tab==='diag'){h+=`<div class="card"><h2>あなたの物件を診断</h2><div class="s">数字を入れると、関東のどの街なら合格かを地図に出します</div>
+    <label class="f">STEP1 物件の値段（万円）</label><input class="search" id="dp" inputmode="decimal" placeholder="例 180"><div class="chips">${[100,180,300,500].map(v=>`<button data-set="dp" data-v="${v}">${v}万</button>`).join('')}</div>
+    <label class="f">STEP2 リフォーム代（万円）</label><input class="search" id="dr" inputmode="decimal" placeholder="例 70"><div class="chips">${[[0,'かけない'],[50,'50万'],[70,'70万'],[150,'150万']].map(([v,l])=>`<button data-set="dr" data-v="${v}">${l}</button>`).join('')}</div>
+    <label class="f">STEP3 想定家賃（月・万円）</label><input class="search" id="dy" inputmode="decimal" placeholder="例 3.8"><div class="chips">${[3,3.8,4.5,5.5].map(v=>`<button data-set="dy" data-v="${v}">${v}万</button>`).join('')}</div>
+    <label class="f">STEP4 物件のある市区町村（任意）</label><input class="search" id="dc" list="cities" placeholder="例 牛久市"><datalist id="cities">${MAP.filter(m=>m.rate).map(m=>`<option value="${m.name}">${m.pref}</option>`).join('')}</datalist>
+    <button class="go" id="dgo">診断する</button><div id="dres"></div>
+    <div class="note">表面利回り＝年間家賃÷（物件価格＋リフォーム費）。円で入れても自動で万円に直します。登記費用や税金を入れるともう少し下がります。</div></div>`;}
+  B.innerHTML=h;
+  B.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>{selectProp(PROPS.find(p=>p.id===el.dataset.id));B.scrollTop=0;});
+  B.querySelectorAll('[data-set]').forEach(el=>el.onclick=()=>{$('#'+el.dataset.set).value=el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));});
+  B.querySelectorAll('[data-k]').forEach(el=>el.onclick=()=>{kindF=el.dataset.k;render();});
+  B.querySelectorAll('[data-p]').forEach(el=>el.onclick=()=>{prefF=el.dataset.p;render();});
+  B.querySelectorAll('[data-c]').forEach(el=>el.onclick=()=>{const[pf,n]=el.dataset.c.split('|');selectCity(byCity(pf,n));B.scrollTop=0;});
+  const qi=$('#q');if(qi){qi.oninput=()=>{q=qi.value.trim();const pos=qi.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(pos,pos);};}
+  const go=$('#dgo');if(go)go.onclick=()=>{const man=v=>{v=parseFloat(String(v).replace(/[^0-9.]/g,''));if(!isFinite(v))return NaN;return v>=10000?v/10000:v;};
+    const pr=man($('#dp').value),rf=man($('#dr').value)||0,rent=man($('#dy').value);const out=$('#dres');
+    if(!(pr>0)||!(rent>0)){out.innerHTML='<div class="verdict v-ng">物件価格と家賃を入れてください</div>';return;}
+    const y=Math.round(rent*12/(pr+rf)*1000)/10,cn=$('#dc').value.trim(),m=MAP.find(x=>x.rate&&x.name===cn);
+    out.innerHTML=`<div class="verdict ${!m||y>=m.rate?'v-ok':'v-ng'}">表面利回り <b style="font-size:20px">${y}%</b><br>${m?`${m.name}の合格ラインは ${m.rate}% → <b>${y>=m.rate?'合格':'あと'+(m.rate-y).toFixed(1)+'%'}</b><br>`:''}関東の <b>${passPct(y)}%</b> のエリアで合格ライン以上</div>`;
+    diagnose(y,m);};
+}
+function scrollToSel(){const el=document.querySelector('.item.on');$('#body').scrollTop=0;}
+
+// ── 開始 ─────────────────────────────
+new ResizeObserver(resize).observe(stage);resize();Object.assign(cam,HOME(),{dist:520,pit:70});Object.assign(goal,HOME());if(CAP)document.body.classList.add('light');render();lgd();if(!CAP)loop();
+function lgd(){$('#lgd').innerHTML=BANDS.map(b=>`<span><i style="background:${b[1]};color:${b[1]}"></i>${b[2]}</span>`).join('');}
+const cur=document.createElement('div');cur.id='cur';cur.innerHTML='<svg width="30" height="36" viewBox="0 0 30 36"><path d="M2 2 L2 28 L9 21 L14 33 L19 31 L14 19 L24 19 Z" fill="#ff3b5c" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg><b></b>';
+cur.style.cssText='position:fixed;left:0;top:0;z-index:99;pointer-events:none;display:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))';document.body.appendChild(cur);
+const st=document.createElement('style');st.textContent='#cur b{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;border:3px solid #fff;opacity:0}';document.head.appendChild(st);
+window.__app={selectProp,selectCity,diagnose,openTab,PROPS,goal,cam,HOME,
+  frame(t){VT=t;draw();},
+  reveal(v){REVEAL=v;},
+  screen(x,y){const q=pj(x,y),r=cv.getBoundingClientRect();return q?[r.left+q[0]/DPR,r.top+q[1]/DPR]:null;},
+  night(cx,cy){const r=cv.getBoundingClientRect();setNight(true,(cx-r.left)*DPR,(cy-r.top)*DPR);},
+  cursor(x,y,ring){cur.style.display='block';cur.style.transform=`translate(${x}px,${y}px)`;const b=cur.querySelector('b');b.style.opacity=ring>0?String(1-ring):'0';b.style.transform=`scale(${.4+ring*1.4})`;}};
+</script>
+</body></html>
